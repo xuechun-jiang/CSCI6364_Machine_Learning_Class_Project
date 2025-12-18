@@ -13,24 +13,13 @@ from tools.eval_utils import evaluate
 from tools.runtime import get_device, set_seed
 
 
-# =====================
-# 0. Image dir
-# =====================
 IMAGE_DIR = "image"
 os.makedirs(IMAGE_DIR, exist_ok=True)
 
-
-# =====================
-# 1. Runtime
-# =====================
 set_seed(42)
 device = get_device()
 print("Using device:", device)
 
-
-# =====================
-# 2. Data
-# =====================
 data_root = "Data"
 batch_size = 32
 
@@ -42,10 +31,6 @@ train_loader, val_loader, test_loader, class_to_idx = get_dataloaders(
 num_classes = len(class_to_idx)
 print("Classes:", class_to_idx)
 
-
-# =====================
-# 3. ResNet factory
-# =====================
 def get_resnet(model_name, num_classes):
     if model_name == "resnet18":
         model = models.resnet18(
@@ -67,10 +52,6 @@ def get_resnet(model_name, num_classes):
 
     return model
 
-
-# =====================
-# 4. Training loop
-# =====================
 def train_resnet(model, train_loader, val_loader, model_name, epochs=10):
     model = model.to(device)
 
@@ -117,10 +98,6 @@ def train_resnet(model, train_loader, val_loader, model_name, epochs=10):
 
     return best_val_acc, train_accs, val_accs
 
-
-# =====================
-# 5. Accuracy curve (save to image/)
-# =====================
 def plot_accuracy_curve(train_accs, val_accs, model_name):
     epochs = list(range(1, len(train_accs) + 1))
 
@@ -149,9 +126,6 @@ def plot_accuracy_curve(train_accs, val_accs, model_name):
     plt.close()
 
 
-# =====================
-# 6. Confusion matrix utils
-# =====================
 def get_all_preds(model, dataloader):
     model.eval()
     all_preds = []
@@ -194,9 +168,6 @@ def plot_confusion_matrix(y_true, y_pred, class_names, model_name):
     plt.close()
 
 
-# =====================
-# 7. Run experiments
-# =====================
 resnet_variants = ["resnet18", "resnet34", "resnet50"]
 num_epochs = 15
 
@@ -219,9 +190,6 @@ for name in resnet_variants:
     plot_accuracy_curve(train_accs, val_accs, name)
 
 
-# =====================
-# 8. Final test + confusion matrix
-# =====================
 print("\n=== Final Test Evaluation ===")
 
 idx_to_class = {v: k for k, v in class_to_idx.items()}

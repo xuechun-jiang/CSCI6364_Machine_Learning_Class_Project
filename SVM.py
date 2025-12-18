@@ -9,16 +9,11 @@ from sklearn.metrics import accuracy_score
 from tools.data_loader import get_dataloaders
 from tools.runtime import get_device, set_seed
 
-# =====================
-# 1. Runtime
-# =====================
+
 set_seed(42)
 device = get_device()
 print("Using device:", device)
 
-# =====================
-# 2. Data
-# =====================
 data_root = "Data"
 batch_size = 32
 
@@ -30,9 +25,6 @@ train_loader, val_loader, test_loader, class_to_idx = get_dataloaders(
 num_classes = len(class_to_idx)
 print("Classes:", class_to_idx)
 
-# =====================
-# 3. Feature extractor factory
-# =====================
 def get_feature_extractor(model_name):
     if model_name == "resnet18":
         model = models.resnet18(
@@ -95,9 +87,6 @@ def get_feature_extractor(model_name):
 
     return extractor
 
-# =====================
-# 4. Feature extraction
-# =====================
 def extract_features(loader, extractor):
     features = []
     labels = []
@@ -112,12 +101,10 @@ def extract_features(loader, extractor):
 
     return np.concatenate(features), np.concatenate(labels)
 
-# =====================
-# 5. SVM training & evaluation
-# =====================
+
 def run_svm(X_train, y_train, X_val, y_val, X_test, y_test):
     svm = SVC(
-        kernel="rbf",     # 可改成 "linear" 做对照
+        kernel="rbf",     
         C=10,
         gamma="scale"
     )
@@ -129,9 +116,6 @@ def run_svm(X_train, y_train, X_val, y_val, X_test, y_test):
 
     return val_acc, test_acc
 
-# =====================
-# 6. Main experiment loop
-# =====================
 models_to_test = [
     "resnet18",
     "resnet34",
@@ -166,9 +150,6 @@ for name in models_to_test:
         f"{name} | Val Acc: {val_acc:.4f} | Test Acc: {test_acc:.4f}"
     )
 
-# =====================
-# 7. Summary
-# =====================
 print("\n=== Final Summary ===")
 for name, (val_acc, test_acc) in results.items():
     print(

@@ -12,24 +12,15 @@ from tools.eval_utils import evaluate
 from tools.runtime import get_device, set_seed
 
 
-# =====================
-# 0. Image dir
-# =====================
 IMAGE_DIR = "image"
 os.makedirs(IMAGE_DIR, exist_ok=True)
 
 
-# =====================
-# 1. Runtime
-# =====================
 set_seed(42)
 device = get_device()
 print("Using device:", device)
 
 
-# =====================
-# 2. Data
-# =====================
 data_root = "Data"
 batch_size = 32
 
@@ -42,9 +33,6 @@ num_classes = len(class_to_idx)
 print("Classes:", class_to_idx)
 
 
-# =====================
-# 3. Custom CNN
-# =====================
 class SimpleCNN(nn.Module):
     def __init__(self, num_classes):
         super().__init__()
@@ -89,16 +77,10 @@ class SimpleCNN(nn.Module):
 model = SimpleCNN(num_classes=num_classes).to(device)
 
 
-# =====================
-# 4. Loss & Optimizer
-# =====================
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
 
-# =====================
-# 5. Train one epoch
-# =====================
 def train_one_epoch(model, loader):
     model.train()
     total_loss = 0.0
@@ -123,9 +105,6 @@ def train_one_epoch(model, loader):
     return total_loss / total, correct / total
 
 
-# =====================
-# 6. Training loop
-# =====================
 num_epochs = 15
 best_val_acc = 0.0
 
@@ -149,9 +128,6 @@ for epoch in range(num_epochs):
         torch.save(model.state_dict(), "best_custom_cnn_15cls.pth")
 
 
-# =====================
-# 7. Accuracy curve (save)
-# =====================
 epochs = list(range(1, num_epochs + 1))
 
 plt.figure()
@@ -179,9 +155,6 @@ plt.savefig(
 plt.close()
 
 
-# =====================
-# 8. Final test
-# =====================
 model.load_state_dict(
     torch.load("best_custom_cnn_15cls.pth", map_location=device)
 )
@@ -191,9 +164,6 @@ test_loss, test_acc = evaluate(model, test_loader, device)
 print(f"Custom CNN Test Acc: {test_acc:.4f}")
 
 
-# =====================
-# 9. Confusion matrix
-# =====================
 def get_all_preds(model, dataloader):
     model.eval()
     all_preds = []

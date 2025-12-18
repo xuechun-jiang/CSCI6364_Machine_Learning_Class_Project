@@ -13,24 +13,14 @@ from tools.eval_utils import evaluate
 from tools.runtime import get_device, set_seed
 
 
-# =====================
-# 0. Image dir
-# =====================
 IMAGE_DIR = "image"
 os.makedirs(IMAGE_DIR, exist_ok=True)
 
-
-# =====================
-# 1. Runtime
-# =====================
 set_seed(42)
 device = get_device()
 print("Using device:", device)
 
 
-# =====================
-# 2. Data
-# =====================
 data_root = "Data"
 batch_size = 32
 
@@ -43,9 +33,6 @@ num_classes = len(class_to_idx)
 print("Classes:", class_to_idx)
 
 
-# =====================
-# 3. DenseNet-121
-# =====================
 weights = models.DenseNet121_Weights.IMAGENET1K_V1
 model = models.densenet121(weights=weights)
 
@@ -55,16 +42,10 @@ model.classifier = nn.Linear(in_features, num_classes)
 model = model.to(device)
 
 
-# =====================
-# 4. Loss & Optimizer
-# =====================
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
 
-# =====================
-# 5. Training loop
-# =====================
 num_epochs = 15
 best_val_acc = 0.0
 
@@ -105,10 +86,6 @@ for epoch in range(num_epochs):
         best_val_acc = val_acc
         torch.save(model.state_dict(), "best_densenet121.pth")
 
-
-# =====================
-# 6. Accuracy curve (save)
-# =====================
 epochs = list(range(1, num_epochs + 1))
 
 plt.figure()
@@ -135,10 +112,6 @@ plt.savefig(
 )
 plt.close()
 
-
-# =====================
-# 7. Final test
-# =====================
 model.load_state_dict(
     torch.load("best_densenet121.pth", map_location=device)
 )
@@ -147,10 +120,6 @@ model = model.to(device)
 test_loss, test_acc = evaluate(model, test_loader, device)
 print(f"DenseNet-121 Test Acc: {test_acc:.4f}")
 
-
-# =====================
-# 8. Confusion matrix
-# =====================
 def get_all_preds(model, dataloader):
     model.eval()
     all_preds = []
